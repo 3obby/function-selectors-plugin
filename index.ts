@@ -1,6 +1,5 @@
 import { extendEnvironment } from "hardhat/config";
 import { task } from "hardhat/config";
-import { HardhatUserConfig } from "hardhat/types";
 import { ethers } from "ethers";
 import * as fs from "fs";
 import * as path from "path";
@@ -53,8 +52,13 @@ extendEnvironment((hre) => {
 
           for (let item of abi) {
             if (item.type === "function") {
-              const signature = ethers.id(
-                `${item.name}(${item.inputs.map((i: any) => i.type).join(",")})`
+              const signature = ethers.utils.solidityKeccak256(
+                ["string"],
+                [
+                  `${item.name}(${item.inputs
+                    .map((i: any) => i.type)
+                    .join(",")})`,
+                ]
               );
               const selector = signature.slice(0, 10);
 

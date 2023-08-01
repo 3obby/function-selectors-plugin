@@ -1,0 +1,16 @@
+{
+  "compilerOptions": {
+    "target": "ES2019",
+    "module": "ES2020",
+    "declaration": true,
+    "outDir": "./dist/esm",
+    "strict": true,
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+    "composite": true,
+    "moduleResolution": "node"
+  },
+  "include": ["index.ts"],
+  "exclude": ["node_modules", "**/__tests__/*"],
+  "references": [{ "path": "./tsconfig.cjs.json" }]
+}

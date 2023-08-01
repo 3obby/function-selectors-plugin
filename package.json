@@ -2,17 +2,22 @@
   "name": "hardhat-generate-function-selectors",
   "version": "1.0.0",
   "description": "A Hardhat plugin to generate function selectors from Solidity contracts.",
-  "main": "index.ts",
+  "main": "./dist/cjs/index.js",
+  "module": "./dist/esm/index.js",
+  "types": "./dist/esm/index.d.ts",
+  "scripts": {
+    "build": "tsc --build"
+  },
   "author": "3obby",
   "license": "MIT",
   "dependencies": {
     "hardhat": "^2.17.0"
   },
   "devDependencies": {
-    "hardhat": "^2.17.0"
-  },
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "@types/mocha": "^10.0.1",
+    "hardhat": "^2.17.0",
+    "hardhat-generate-function-selectors": "^1.0.0",
+    "typescript": "^5.1.6"
   },
   "repository": {
     "type": "git",
