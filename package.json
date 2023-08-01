@@ -10,5 +10,22 @@
   },
   "devDependencies": {
     "hardhat": "^2.17.0"
-  }
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/3obby/function-selectors-plugin.git"
+  },
+  "keywords": [
+    "function",
+    "selectors",
+    "tooling",
+    "router"
+  ],
+  "bugs": {
+    "url": "https://github.com/3obby/function-selectors-plugin/issues"
+  },
+  "homepage": "https://github.com/3obby/function-selectors-plugin#readme"
 }
