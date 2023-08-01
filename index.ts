@@ -52,7 +52,7 @@ extendEnvironment((hre) => {
 
           for (let item of abi) {
             if (item.type === "function") {
-              const signature = ethers.utils.solidityKeccak256(
+              const packedData = ethers.utils.defaultAbiCoder.encode(
                 ["string"],
                 [
                   `${item.name}(${item.inputs
@@ -60,6 +60,8 @@ extendEnvironment((hre) => {
                     .join(",")})`,
                 ]
               );
+
+              const signature = ethers.utils.keccak256(packedData);
               const selector = signature.slice(0, 10);
 
               // Save the selector under the corresponding contract if enabled
