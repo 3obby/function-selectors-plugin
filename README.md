@@ -1,8 +1,8 @@
-# hardhat selectors
+# generate-function-selectors plugin
 
 Hardhat TS plugin to generate function selectors from each of the ABI/.json files found in the artifacts/contracts. (Depth/organization doesn't matter)
 
-Outputs 'selectors.json' to project's root directory:
+Outputs 'selectors.json' to project's root directory, which looks like the below for the hardhat example project:
 
 ```
 {
@@ -14,25 +14,45 @@ Outputs 'selectors.json' to project's root directory:
 }
 ```
 
-if you are using TypeScript, in your `hardhat.config.ts`:
+## Quick Start
+
+1. Install the Hardhat plug-in
+
+```npm
+npm install hardhat-generate-function-selectors
+```
+
+```yarn
+yarn add hardhat-generate-function-selectors
+```
+
+2. Add this to your hardhat.config.js
+
+```js
+require('import "hardhat-generate-function-selectors";');
+```
 
 ```ts
-import "./function-selectors-plugin/index.ts";
+import "hardhat-generate-function-selectors";
 ```
 
-Try running the following task:
+3. Add this to your hardhat.config.js as well:
 
-```shell
-yarn hardhat selectors
-```
-
-# options
-
-```shell
-module.exports = {
+```bash
+<your hardhat config> = {
   functionSelectors: {
     separateContractSelectors: true, //separate by contract
     orderedByValue: true, //order function selectors by hex value, least to greatest
   },
 };
+```
+
+Now you're able to to generate the function selectors with:
+
+```bash
+npx hardhat selectors
+```
+
+```bash
+yarn hardhat selectors
 ```
