@@ -1,6 +1,6 @@
 {
   "name": "hardhat-generate-function-selectors",
-  "version": "1.8.0",
+  "version": "1.9.0",
   "description": "A Hardhat plugin to generate function selectors from Solidity contracts.",
   "main": "./dist/cjs/index.js",
   "module": "./dist/esm/index.js",
