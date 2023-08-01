@@ -2,6 +2,7 @@ import { extendEnvironment } from "hardhat/config";
 import { task } from "hardhat/config";
 import * as fs from "fs";
 import * as path from "path";
+import "@nomiclabs/hardhat-ethers";
 
 interface CustomHardhatConfig {
   separateContractSelectors?: boolean;
@@ -17,16 +18,7 @@ declare module "hardhat/types/config" {
   }
 }
 
-declare module "hardhat/types/runtime" {
-  interface HardhatRuntimeEnvironment {
-    selectors: () => Promise<void>;
-    ethers: any;
-  }
-}
-
 extendEnvironment((hre) => {
-  let abiCoder = new hre.ethers.utils.AbiCoder();
-
   hre.selectors = async () => {
     const artifactsDir = path.join(hre.config.paths.artifacts, "/contracts");
     const separateContractSelectors =
@@ -55,11 +47,12 @@ extendEnvironment((hre) => {
           const abi = artifact.abi;
 
           if (separateContractSelectors) {
-            contractsSelectors[contractName] = {}; // Initialize selectors for this contract
+            contractsSelectors[contractName] = {};
           }
 
           for (let item of abi) {
             if (item.type === "function") {
+              const abiCoder = new hre.ethers.utils.AbiCoder();
               const packedData = abiCoder.encode(
                 ["string"],
                 [
