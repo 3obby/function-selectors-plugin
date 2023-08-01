@@ -4,6 +4,8 @@ import { ethers } from "ethers";
 import * as fs from "fs";
 import * as path from "path";
 
+let abiCoder = new ethers.utils.AbiCoder();
+
 interface CustomHardhatConfig {
   separateContractSelectors?: boolean;
   orderedByValue?: boolean;
@@ -52,7 +54,7 @@ extendEnvironment((hre) => {
 
           for (let item of abi) {
             if (item.type === "function") {
-              const packedData = ethers.utils.defaultAbiCoder.encode(
+              const packedData = abiCoder.encode(
                 ["string"],
                 [
                   `${item.name}(${item.inputs
