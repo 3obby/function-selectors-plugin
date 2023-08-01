@@ -1435,13 +1435,6 @@ graceful-fs@^4.1.2, graceful-fs@^4.1.6, graceful-fs@^4.1.9:
   resolved "https://registry.yarnpkg.com/graceful-fs/-/graceful-fs-4.2.11.tgz#4183e4e8bf08bb6e05bbb2f7d2e0c8f712ca40e3"
   integrity sha512-RbJ5/jmFcNNCcDV5o9eTnBLJ/HszWV0P73bc+Ff4nS/rJj+YaS6IGyiOL0VoBYX+l1Wrl3k63h/KrH+nhJ0XvQ==
 
-hardhat-generate-function-selectors@^1.0.0:
-  version "1.0.0"
-  resolved "https://registry.yarnpkg.com/hardhat-generate-function-selectors/-/hardhat-generate-function-selectors-1.0.0.tgz#b623d2bab4e7722860d3c3e9280d391277721432"
-  integrity sha512-Ou2nGEa4CKXYZ1/mxKYQoVADg5PTiRckSXDg92N/+g7F4eDG7FZT6Jg93zKkMI7j5fzYIMNxbsyBzDN0tY+pKg==
-  dependencies:
-    hardhat "^2.17.0"
-
 hardhat@^2.17.0:
   version "2.17.0"
   resolved "https://registry.yarnpkg.com/hardhat/-/hardhat-2.17.0.tgz#574478790fa4f4a45c5ccf162e82e54f36671749"

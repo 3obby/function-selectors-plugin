@@ -1,10 +1,7 @@
 import { extendEnvironment } from "hardhat/config";
 import { task } from "hardhat/config";
-import { ethers } from "ethers";
 import * as fs from "fs";
 import * as path from "path";
-
-let abiCoder = new ethers.utils.AbiCoder();
 
 interface CustomHardhatConfig {
   separateContractSelectors?: boolean;
@@ -20,7 +17,16 @@ declare module "hardhat/types/config" {
   }
 }
 
+declare module "hardhat/types/runtime" {
+  interface HardhatRuntimeEnvironment {
+    selectors: () => Promise<void>;
+    ethers: any;
+  }
+}
+
 extendEnvironment((hre) => {
+  let abiCoder = new hre.ethers.utils.AbiCoder();
+
   hre.selectors = async () => {
     const artifactsDir = path.join(hre.config.paths.artifacts, "/contracts");
     const separateContractSelectors =
@@ -63,7 +69,7 @@ extendEnvironment((hre) => {
                 ]
               );
 
-              const signature = ethers.utils.keccak256(packedData);
+              const signature = hre.ethers.utils.keccak256(packedData);
               const selector = signature.slice(0, 10);
 
               // Save the selector under the corresponding contract if enabled
