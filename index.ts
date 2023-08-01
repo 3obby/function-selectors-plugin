@@ -20,7 +20,7 @@ declare module "hardhat/types/config" {
 
 extendEnvironment((hre) => {
   hre.selectors = async () => {
-    const artifactsDir = path.join(__dirname, "../artifacts/contracts");
+    const artifactsDir = path.join(hre.config.paths.artifacts, "/contracts");
     const separateContractSelectors =
       hre.config.functionSelectors.separateContractSelectors || false;
     const orderedByValue = hre.config.functionSelectors.orderedByValue || false;
@@ -42,7 +42,7 @@ extendEnvironment((hre) => {
           path.extname(file) === ".json" &&
           !file.endsWith(".dbg.json")
         ) {
-          const contractName = path.basename(file, ".json") + ".sol";
+          const contractName = path.basename(file, ".json");
           const artifact = JSON.parse(fs.readFileSync(filePath, "utf8"));
           const abi = artifact.abi;
 
