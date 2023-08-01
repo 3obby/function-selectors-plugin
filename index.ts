@@ -21,7 +21,7 @@ declare module "hardhat/types/config" {
 extendEnvironment((hre) => {
   hre.selectors = async () => {
     if (!hre.config.functionSelectors) {
-      throw new Error(`Missing \`functionSelectors\` configuration in Hardhat.config 
+      throw new Error(`Missing \`functionSelectors\` configuration in Hardhat config. 
         An example configuration looks like this:
 
         module.exports = {
@@ -34,10 +34,11 @@ extendEnvironment((hre) => {
       `);
     }
 
-    const artifactsDir = path.join(hre.config.paths.artifacts, "/contracts");
     const separateContractSelectors =
       hre.config.functionSelectors.separateContractSelectors || false;
     const orderedByValue = hre.config.functionSelectors.orderedByValue || false;
+
+    const artifactsDir = path.join(hre.config.paths.artifacts, "/contracts");
 
     // Initialize an object to store all contracts selectors
     let contractsSelectors: {
