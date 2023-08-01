@@ -20,6 +20,20 @@ declare module "hardhat/types/config" {
 
 extendEnvironment((hre) => {
   hre.selectors = async () => {
+    if (!hre.config.functionSelectors) {
+      throw new Error(`Missing \`functionSelectors\` configuration in Hardhat.config 
+        An example configuration looks like this:
+
+        module.exports = {
+          functionSelectors: {
+            separateContractSelectors: true, // separate by contract
+            orderedByValue: true, // order function selectors by hex value, least to greatest
+          },
+          // other configurations...
+        };
+      `);
+    }
+
     const artifactsDir = path.join(hre.config.paths.artifacts, "/contracts");
     const separateContractSelectors =
       hre.config.functionSelectors.separateContractSelectors || false;
