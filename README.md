@@ -29,7 +29,7 @@ yarn add hardhat-generate-function-selectors
 2. Add this to your hardhat.config.js
 
 ```js
-require('import "hardhat-generate-function-selectors";');
+require("hardhat-generate-function-selectors");
 ```
 
 ```ts
