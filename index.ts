@@ -48,16 +48,13 @@ declare module "hardhat/types/config" {
 }
 
 const DEFAULT_CONFIG : FunctionSelectorsConfigEntry = {
-    separateContractSelectors: false, // separate by contract
-    orderedByValue: false, // order function selectors by hex value, least to greatest
-
-    outputPath: "'",
+    separateContractSelectors: true,
+    orderedByValue: false,
+    outputPath: ".",
     outputFilename: "selectors.json",
-
-    pretty: true, // pretty print the output JSON(s)
-    runOnCompile: true, // run the selectors task on compile
-    includeParams: true, // include the parameters in the selector title (outputs only)
-
+    pretty: true,
+    runOnCompile: true,
+    includeParams: true,
     only: [],
     except: [],
     skipSelectors: [],
