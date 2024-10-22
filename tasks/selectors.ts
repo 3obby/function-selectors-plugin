@@ -2,6 +2,7 @@ import {task, subtask, types} from "hardhat/config"
 import {checkConfigExists, sortDict} from "../tools";
 import {FunctionSelectorsConfigEntry} from "../index";
 import fs from "fs";
+import * as path from 'path';
 
 task('selectors')
     .setAction(async (args, hre) => {
@@ -31,8 +32,6 @@ subtask(
         abiGroupConfig: FunctionSelectorsConfigEntry;
     };
 
-    const outFile = `${config.outputPath}/${config.outputFilename}`
-
     const fullNames = await hre.artifacts.getAllFullyQualifiedNames()
 
     const abiCoder = new hre.ethers.utils.AbiCoder()
@@ -45,10 +44,10 @@ subtask(
     await Promise.all(
         fullNames.map(async (fullName) => {
             // if limiting with only, skip if not matching some expression
-            if (config.only && config.only.length && !config.only.some((m) => fullName.match(m)))
+            if (config.only.length && !config.only.some((m) => fullName.match(m)))
                 return [fullName, {}]
             // if limiting with except, skip if matching some expression
-            if (config.except && config.except.length && config.except.some((m) => fullName.match(m)))
+            if (config.except.length && config.except.some((m) => fullName.match(m)))
                 return [fullName, {}]
 
             // load the artifact
@@ -74,7 +73,7 @@ subtask(
                     const selector = signature.slice(0, 10)
 
                     // check if this selector is in the skip list
-                    if (config.skipSelectors && config.skipSelectors.length && config.skipSelectors.some((m) => selector.match(m)))
+                    if (config.skipSelectors.length && config.skipSelectors.some((m) => selector.match(m)))
                         continue
 
                     contractsSelectors[contractName][selector] = persistedSelectorTitle
@@ -95,23 +94,29 @@ subtask(
 
     // Ordering function selectors by their hex value if enabled
     if (config.orderedByValue) {
-        outputSelectors = config.separateContractSelectors
-            // sort the selectors associated with each contract
-            ? Object.fromEntries(
+        // if separated, sort the selectors for each contract
+        if(config.separateContractSelectors){
+            outputSelectors = Object.fromEntries(
                 Object.entries(contractsSelectors).map(
                     ([contract, selectors]) => [contract, sortDict(selectors)]
                 )
             )
-            // sort all the selectors
-            : sortDict(outputSelectors);
+        }
+
+        // regardless of separation, sort the output keys
+        //  - if separated, sorts contract names
+        //  - if not separated, sorts selectors
+        outputSelectors = sortDict(outputSelectors)
     }
 
-    const writeData = config.pretty ? JSON.stringify(outputSelectors, null, 2) : JSON.stringify(outputSelectors)
-
-    fs.mkdirSync(config.outputPath, {recursive: true})
+    // make sure the parent directory to the outputPath exists
+    fs.mkdirSync(path.dirname(config.outputPath), {recursive: true})
 
     // Write the contracts' selectors to a file
-    fs.writeFileSync(outFile, writeData)
+    fs.writeFileSync(
+        config.outputPath,
+        JSON.stringify(outputSelectors, null, config.pretty ? 2 : 0)
+    )
 
-    console.log(`Function selectors have been written to ${outFile}`)
+    console.log(`Function selectors have been written to ${config.outputPath}`)
 })

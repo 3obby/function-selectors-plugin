@@ -38,18 +38,17 @@ import "hardhat-generate-function-selectors";
 
 3. Add this to your hardhat.config.js as well:
 
-| option         | description                                                                                                                                                  | default          |
-| -------------- |--------------------------------------------------------------------------------------------------------------------------------------------------------------|------------------|
-| `separateContractSelectors`         | separate by contract                                                                                                                                         | `true`           |
-| `orderedByValue` | order function selectors by hex value, least to greatest                                                                                                      | `false`          |
-| `outputPath`        | directory where output file should be written                                                                                                     | `./`             |
-| `outputFilename`         | filename of generated output                                                                                              | `selectors.json` |
-| `pretty`         | pretty print the output JSON(s)                                                   | `true`           |
-| `runOnCompile`       | run the selectors task on compile                                                                                                   | `true`           |
-| `includeParams`      | include the parameters in the selector title (outputs only)                                                                                                 | `true`           |
-| `only`       | Array of String matchers used to select included contracts, defaults to all contracts if length is 0                                                                                  | `[]`             |
-| `except`       | Array of String matchers used to exclude contracts                                                                                   | `[]`             |
-| `skipSelectors`       | Array of selectors to be excluded from generated output | `[]`             |
+| option         | description                                                                                          | default            |
+| -------------- |------------------------------------------------------------------------------------------------------|--------------------|
+| `separateContractSelectors`         | separate by contract                                                                                 | `true`             |
+| `orderedByValue` | order function selectors by hex value, least to greatest                                             | `false`            |
+| `outputPath`        | directory including filename where output file should be written                                     | `./selectors.json` |
+| `pretty`         | pretty print the output JSON(s)                                                                      | `true`             |
+| `runOnCompile`       | run the selectors task on compile                                                                    | `true`             |
+| `includeParams`      | include the parameters in the selector title (outputs only)                                          | `true`             |
+| `only`       | Array of String matchers used to select included contracts, defaults to all contracts if length is 0 | `[]`               |
+| `except`       | Array of String matchers used to exclude contracts                                                   | `[]`               |
+| `skipSelectors`       | Array of selectors to be excluded from generated output                                              | `[]`               |
 
 
 ```bash

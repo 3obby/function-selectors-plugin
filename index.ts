@@ -8,13 +8,10 @@ import './tasks/selectors';
 interface FunctionSelectorsUserConfigEntry {
     separateContractSelectors?: boolean
     orderedByValue?: boolean
-
-    outputPath?: string,
-
     pretty?: boolean
     runOnCompile?: boolean
     includeParams?: boolean
-
+    outputPath?: string,
     only?: string[]
     except?: string[]
     skipSelectors?: string[]
@@ -23,13 +20,10 @@ interface FunctionSelectorsUserConfigEntry {
 export interface FunctionSelectorsConfigEntry {
     separateContractSelectors: boolean
     orderedByValue: boolean
-
-    outputPath: string,
-
     pretty: boolean
     runOnCompile: boolean
     includeParams: boolean
-
+    outputPath: string,
     only: string[]
     except: string[]
     skipSelectors: string[]
