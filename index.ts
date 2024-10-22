@@ -1,141 +1,88 @@
-import { extendEnvironment } from "hardhat/config";
-import { task } from "hardhat/config";
-import * as fs from "fs";
-import * as path from "path";
-import "@nomiclabs/hardhat-ethers";
+import {extendConfig} from "hardhat/config"
+import {HardhatPluginError} from "hardhat/plugins";
+import "@nomiclabs/hardhat-ethers"
+import 'hardhat/types/config';
+import './tasks/compile';
+import './tasks/selectors';
 
-interface CustomHardhatConfig {
-  separateContractSelectors?: boolean;
-  orderedByValue?: boolean;
+interface FunctionSelectorsUserConfigEntry {
+    separateContractSelectors?: boolean
+    orderedByValue?: boolean
+    pretty?: boolean
+    runOnCompile?: boolean
+    includeParams?: boolean
+    outputPath?: string,
+    only?: string[]
+    except?: string[]
+    skipSelectors?: string[]
+}
+
+export interface FunctionSelectorsConfigEntry {
+    separateContractSelectors: boolean
+    orderedByValue: boolean
+    pretty: boolean
+    runOnCompile: boolean
+    includeParams: boolean
+    outputPath: string,
+    only: string[]
+    except: string[]
+    skipSelectors: string[]
 }
 
 declare module "hardhat/types/config" {
-  interface HardhatUserConfig {
-    functionSelectors?: CustomHardhatConfig;
-  }
-  interface HardhatConfig {
-    functionSelectors: CustomHardhatConfig;
-  }
-}
-
-extendEnvironment((hre) => {
-  hre.selectors = async () => {
-    if (!hre.config.functionSelectors) {
-      throw new Error(`Missing \`functionSelectors\` configuration in Hardhat config. 
-        An example configuration looks like this:
-
-        module.exports = {
-          functionSelectors: {
-            separateContractSelectors: true, // separate by contract
-            orderedByValue: true, // order function selectors by hex value, least to greatest
-          },
-          // other configurations...
-        };
-      `);
+    interface HardhatUserConfig {
+        functionSelectors?: FunctionSelectorsUserConfigEntry | FunctionSelectorsUserConfigEntry[]
     }
 
-    const separateContractSelectors =
-      hre.config.functionSelectors.separateContractSelectors || false;
-    const orderedByValue = hre.config.functionSelectors.orderedByValue || false;
+    interface HardhatConfig {
+        functionSelectors: FunctionSelectorsConfigEntry[]
+    }
+}
 
-    const artifactsDir = path.join(hre.config.paths.artifacts, "/contracts");
+const DEFAULT_CONFIG : FunctionSelectorsConfigEntry = {
+    separateContractSelectors: true,
+    orderedByValue: false,
+    outputPath: "./selectors.json",
+    pretty: true,
+    runOnCompile: true,
+    includeParams: true,
+    only: [],
+    except: [],
+    skipSelectors: [],
+}
 
-    // Initialize an object to store all contracts selectors
-    let contractsSelectors: {
-      [contract: string]: { [selector: string]: string };
-    } = {};
+extendConfig((config, userConfig) => {
+    config.functionSelectors = [userConfig.functionSelectors].flat().map((el) => {
+        // if any values not provided by user, go with defaults
+        const conf = Object.assign({}, DEFAULT_CONFIG, el)
 
-    const processDirectory = (directory: string) => {
-      const files = fs.readdirSync(directory);
-
-      for (let file of files) {
-        const filePath = path.join(directory, file);
-
-        if (fs.lstatSync(filePath).isDirectory()) {
-          processDirectory(filePath);
-        } else if (
-          path.extname(file) === ".json" &&
-          !file.endsWith(".dbg.json")
-        ) {
-          const contractName = path.basename(file, ".json");
-          const artifact = JSON.parse(fs.readFileSync(filePath, "utf8"));
-          const abi = artifact.abi;
-
-          if (separateContractSelectors) {
-            contractsSelectors[contractName] = {};
-          }
-
-          for (let item of abi) {
-            if (item.type === "function") {
-              const abiCoder = new hre.ethers.utils.AbiCoder();
-              const packedData = abiCoder.encode(
-                ["string"],
-                [
-                  `${item.name}(${item.inputs
-                    .map((i: any) => i.type)
-                    .join(",")})`,
-                ]
-              );
-
-              const signature = hre.ethers.utils.keccak256(packedData);
-              const selector = signature.slice(0, 10);
-
-              // Save the selector under the corresponding contract if enabled
-              if (separateContractSelectors) {
-                contractsSelectors[contractName][selector] = item.name;
-              } else {
-                contractsSelectors[selector] = item.name;
-              }
-            }
-          }
+        // check if only/except have an overlap
+        const overlap = conf.only.filter(value => conf.except.includes(value))
+        if (overlap.length>0) {
+            throw new HardhatPluginError(
+                "function-selectors-plugin",
+                `\`only\` & \`except\` elements cannot overlap: [${overlap}]`,
+            );
         }
-      }
-    };
 
-    processDirectory(artifactsDir);
+        // check if any selectors not correct len
+        const incorrectLen = conf.skipSelectors.filter((sel) => sel.length !== 10)
+        if(incorrectLen.length > 0){
+            throw new HardhatPluginError(
+                "function-selectors-plugin",
+                `selectors in \`skipSelectors\` must be 10 characters: [${incorrectLen}]`,
+            );
+        }
 
-    // Ordering function selectors by their hex value if enabled
-    if (orderedByValue) {
-      for (let contract in contractsSelectors) {
-        const unorderedSelectors = contractsSelectors[contract];
-        const orderedSelectors = Object.keys(unorderedSelectors)
-          .sort()
-          .reduce((obj, key) => {
-            obj[key] = unorderedSelectors[key];
-            return obj;
-          }, {} as { [selector: string]: string });
+        // check if any selectors don't start with "0x"
+        const incorrectPrefix = conf.skipSelectors.filter((sel) => !sel.startsWith("0x"))
+        if(incorrectLen.length > 0){
+            throw new HardhatPluginError(
+                "function-selectors-plugin",
+                `selectors in \`skipSelectors\` must be start with a \`0x\`: [${incorrectPrefix}]`,
+            );
+        }
 
-        contractsSelectors[contract] = orderedSelectors;
-      }
-    }
-
-    // Write the contracts' selectors to a file
-    fs.writeFileSync(
-      "selectors.json",
-      JSON.stringify(contractsSelectors, null, 2)
-    );
-
-    console.log("Function selectors have been written to selectors.json");
-  };
-});
-
-// Define a new task that uses your plugin
-task(
-  "selectors",
-  "Generate a file of function selectors",
-  async (args, hre) => {
-    await hre.selectors();
-  }
-);
-
-// This is needed for TypeScript not to complain about the hre.selectors() field
-declare module "hardhat/types/config" {
-  export interface HardhatUserConfig {
-    selectors?: () => Promise<void>;
-  }
-}
-declare module "hardhat/types/runtime" {
-  interface HardhatRuntimeEnvironment {
-    selectors: () => Promise<void>;
-  }
-}
+        return conf as FunctionSelectorsConfigEntry
+    })
+})

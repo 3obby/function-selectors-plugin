@@ -10,7 +10,12 @@
     "composite": true,
     "moduleResolution": "node"
   },
-  "include": ["index.ts"],
-  "exclude": ["node_modules", "**/__tests__/*"],
+  "include": [
+    "index.ts",
+    "tools.ts",
+    "tasks/compile.ts",
+    "tasks/selectors.ts"
+  ],
+  "exclude": ["node_modules", "dist", "**/__tests__/*"],
   "references": [{ "path": "./tsconfig.cjs.json" }]
 }
